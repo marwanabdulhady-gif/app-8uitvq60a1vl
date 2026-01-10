@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import IntersectObserver from '@/components/common/IntersectObserver';
 import AppLayout from '@/components/layouts/AppLayout';
 import { LanguageProvider } from '@/contexts/LanguageContext';
@@ -8,7 +8,7 @@ import { Toaster } from '@/components/ui/toaster';
 
 const App: React.FC = () => {
   return (
-    <Router>
+    <BrowserRouter>
       <LanguageProvider>
         <IntersectObserver />
         <AppLayout>
@@ -25,7 +25,7 @@ const App: React.FC = () => {
         </AppLayout>
         <Toaster />
       </LanguageProvider>
-    </Router>
+    </BrowserRouter>
   );
 };
 
