@@ -1,4 +1,4 @@
-// Language Context for i18n support
+// سياق اللغة لدعم تعدد اللغات
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 
 type Language = 'ar' | 'en';
@@ -9,7 +9,16 @@ interface LanguageContextType {
   t: (key: string) => string;
 }
 
-const translations = {
+type TranslationKeys = {
+  [key: string]: string;
+};
+
+type Translations = {
+  ar: TranslationKeys;
+  en: TranslationKeys;
+};
+
+const translations: Translations = {
   ar: {
     // Navigation
     'nav.images': 'توليد الصور',
@@ -269,26 +278,36 @@ const translations = {
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
+  // تهيئة اللغة الافتراضية
   const [language, setLanguageState] = useState<Language>('en');
+  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
-    const savedLanguage = localStorage.getItem('language') as Language;
-    if (savedLanguage && (savedLanguage === 'ar' || savedLanguage === 'en')) {
+    // تحميل اللغة المحفوظة من localStorage
+    const savedLanguage = localStorage.getItem('language');
+    if (savedLanguage === 'ar' || savedLanguage === 'en') {
       setLanguageState(savedLanguage);
-      document.documentElement.setAttribute('dir', savedLanguage === 'ar' ? 'rtl' : 'ltr');
-      document.documentElement.setAttribute('lang', savedLanguage);
     }
+    setIsInitialized(true);
   }, []);
+
+  useEffect(() => {
+    if (isInitialized) {
+      // تطبيق اتجاه النص واللغة على المستند
+      const dir = language === 'ar' ? 'rtl' : 'ltr';
+      document.documentElement.setAttribute('dir', dir);
+      document.documentElement.setAttribute('lang', language);
+    }
+  }, [language, isInitialized]);
 
   const setLanguage = (lang: Language) => {
     setLanguageState(lang);
     localStorage.setItem('language', lang);
-    document.documentElement.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
-    document.documentElement.setAttribute('lang', lang);
   };
 
   const t = (key: string): string => {
-    return translations[language][key] || key;
+    const translation = translations[language]?.[key];
+    return translation || key;
   };
 
   return (
