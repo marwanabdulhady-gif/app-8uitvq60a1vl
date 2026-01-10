@@ -1,4 +1,4 @@
-// أنواع البيانات للتطبيق
+// Application data types
 
 export interface GenerationHistory {
   id: string;
@@ -8,6 +8,8 @@ export interface GenerationHistory {
   aspect_ratio?: string;
   duration?: string;
   reference_strength?: number;
+  model?: string;
+  thumbnail_generated?: boolean;
   status: 'pending' | 'processing' | 'success' | 'failed';
   task_id?: string;
   result_url?: string;
@@ -25,12 +27,15 @@ export interface ImageGenerationRequest {
     data: string;
   };
   referenceStrength?: number;
+  model?: string;
+  generateThumbnail?: boolean;
 }
 
 export interface VideoGenerationRequest {
   prompt: string;
   aspectRatio?: string;
   duration?: string;
+  model?: string;
 }
 
 export interface TaskStatus {
@@ -57,7 +62,7 @@ export interface TaskStatus {
   };
 }
 
-// نوع Profile للتوافق مع AuthContext
+// Profile type for AuthContext compatibility
 export interface Profile {
   id: string;
   email?: string;
@@ -66,4 +71,24 @@ export interface Profile {
   created_at?: string;
   updated_at?: string;
 }
+
+// Settings type
+export interface AppSettings {
+  theme: 'light' | 'dark' | 'system';
+  language: 'ar' | 'en';
+  defaultImageModel: string;
+  defaultVideoModel: string;
+  defaultAspectRatio: string;
+  autoSaveHistory: boolean;
+  showThumbnails: boolean;
+}
+
+// AI Models
+export interface AIModel {
+  id: string;
+  name: string;
+  description: string;
+  type: 'image' | 'video';
+}
+
 

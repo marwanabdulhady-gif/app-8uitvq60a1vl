@@ -1,23 +1,23 @@
-// Edge Function لإرسال مهمة توليد الفيديو
+// Edge Function for submitting video generation task
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
 Deno.serve(async (req) => {
-  // معالجة طلبات OPTIONS
+  // Handle OPTIONS requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { prompt, aspectRatio, duration } = await req.json();
+    const { prompt, aspectRatio, duration, model } = await req.json();
 
     if (!prompt) {
-      throw new Error('النص الوصفي مطلوب');
+      throw new Error('Text prompt is required');
     }
 
-    // بناء محتوى الطلب
+    // Build request body
     const requestBody: {
       prompt: string;
       model_name: string;
@@ -25,7 +25,7 @@ Deno.serve(async (req) => {
       duration?: string;
     } = {
       prompt,
-      model_name: 'kling-v2-master',
+      model_name: model || 'kling-v2-master',
     };
 
     if (aspectRatio) {
@@ -36,7 +36,7 @@ Deno.serve(async (req) => {
       requestBody.duration = duration;
     }
 
-    // إرسال الطلب إلى API
+    // Send request to API
     const response = await fetch(
       'https://api-integrations.appmedo.com/app-8uitvq60a1vl/api-Xa6JZENRrGoa/v1/videos/text2video',
       {
@@ -51,7 +51,7 @@ Deno.serve(async (req) => {
     const result = await response.json();
 
     if (result.code !== 0) {
-      throw new Error(result.message || 'فشل في إرسال مهمة توليد الفيديو');
+      throw new Error(result.message || 'Failed to submit video generation task');
     }
 
     return new Response(
